@@ -118,4 +118,104 @@ We create a folder named "Books" and "cd" into the folder using this command:
 ```
 mkdir Books && cd Books
 ```
+![alt text](images/4.11.png)
+
+We then run the command to initialisze `npm project`.
+```
+npm init
+```
+Add a file to it named server.js.
+```
+touch server.js
+```
+Open the file
+```
+vim server.js
+```
+Then copy the following codes into the server.js file.
+
+```
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
+require('./apps/routes')(app);
+app.set('port', 3300);
+app.listen(app.get('port'), function() {
+    console.log('Server up: http://localhost:' + app.get('port'));
+});
+```
+Then save and quit press ESC, then :wq and ENTER.
+
+![alt text](images/4.13.png)
+
+The next thing to do is to install `Express` and set up `Routes` to the server.
+
+**INSTALLING EXPRESS AND SETTING UP ROUTES TO THE SERVER**
+
+`Express` is a minimal and flexible `Node.js web application framework` that provides features for web and mobile applications. We will use `Express` to pass book information to and from our `MongoDB database`.
+
+We also will use `Mongoose` package which provides a straight-forward, `schema-based` solution to model your application data. We will use `Mongoose` to establish a `schema` for the `database` to store data of our book register.
+
+Install Express and Mongoose.
+```
+sudo npm install express mongoose
+```
+![alt text](images/4.14.png)
+
+In ‘Books’ folder, create a folder named apps
+```
+mkdir apps && cd apps
+```
+![alt text](images/4.15.png)
+
+In Books directory, create a file named routes.js.
+```
+touch routes.js
+```
+Open the file
+```
+vim routes.js
+```
+Copy the following codes into the file
+```
+var Book = require('./models/book');
+module.exports = function(app) {
+  app.get('/book', function(req, res) {
+    Book.find({}, function(err, result) {
+      if ( err ) throw err;
+      res.json(result);
+    });
+  }); 
+  app.post('/book', function(req, res) {
+    var book = new Book( {
+      name:req.body.name,
+      isbn:req.body.isbn,
+      author:req.body.author,
+      pages:req.body.pages
+    });
+    book.save(function(err, result) {
+      if ( err ) throw err;
+      res.json( {
+        message:"Successfully added book",
+        book:result
+      });
+    });
+  });
+  app.delete("/book/:isbn", function(req, res) {
+    Book.findOneAndRemove(req.query, function(err, result) {
+      if ( err ) throw err;
+      res.json( {
+        message: "Successfully deleted the book",
+        book: result
+      });
+    });
+  });
+  var path = require('path');
+  app.get('*', function(req, res) {
+    res.sendfile(path.join(__dirname + '/public', 'index.html'));
+  });
+};
+```
 
