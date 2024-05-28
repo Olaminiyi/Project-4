@@ -291,7 +291,7 @@ Open the file
 ```
 vi book.js
 ```
-Ten we copy and paste the following codes into the file.
+Then we copy and paste the following codes into the file.
 ```
 var mongoose = require('mongoose');
 var dbHost = 'mongodb://localhost:27017/test';
